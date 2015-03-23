@@ -40,14 +40,14 @@
   </tr>
   <tr>
     <td><br></td>
-    <td><b>F_pos</b></td>
-    <td><b>F_neg</b></td>
-    <td><b>F_ntr</b></td>
-    <td><b>F_all</b></td>
-    <td><b>F_p/n</b></td>
-    <td><b>Acc</b></td>
-    <td><b>Difference <br>F_all</b></td>
-    <td><b>Difference <br>F_p/n</b></td>
+    <td align="center"><b>F<sub>pos</sub></b></td>
+    <td align="center"><b>F<sub>neg</sub></b></td>
+    <td align="center"><b>F<sub>ntr</sub></b></td>
+    <td align="center"><b>F<sub>all</sub></b></td>
+    <td align="center"><b>F<sub>p/n</sub></b></td>
+    <td align="center"><b>Acc</b></td>
+    <td align="center"><b>D<sub>F<sub>all</sub></sub></b></td>
+    <td align="center"><b>D<sub>F<sub>p/n</sub></sub></b></td>
   </tr>
   <tr>
     <td><b>All Features</b></td>
@@ -57,7 +57,7 @@
     <td><b>.7012</b></td>
     <td><b>.6685</b></td>
     <td><b>.7021</b></td>
-    <td><br></td>
+    <td></td>
     <td></td>
   </tr>
   <tr>
@@ -68,8 +68,8 @@
     <td>.7023</td>
     <td>.6331</td>
     <td>.6974</td>
-    <td>+.0011</td>
-    <td>-.0354</td>
+    <td align="right">+.0011</td>
+    <td align="right">-.0354</td>
   </tr>
   <tr>
     <td>- TF-IDF</td>
@@ -79,8 +79,8 @@
     <td>.6634</td>
     <td>.6398</td>
     <td>.6666</td>
-    <td>-.0378</td>
-    <td>-.0287</td>
+    <td align="right">-.0378</td>
+    <td align="right">-.0287</td>
   </tr>
   <tr>
     <td>- POS Tags</td>
@@ -90,8 +90,8 @@
     <td>.6903</td>
     <td>.6531</td>
     <td>.6916</td>
-    <td>-.0109</td>
-    <td>-.0154</td>
+    <td align="right">-.0109</td>
+    <td align="right">-.0154</td>
   </tr>
   <tr>
     <td>- AFINN</td>
@@ -101,8 +101,8 @@
     <td>.6857</td>
     <td>.6545</td>
     <td>.6869</td>
-    <td>-.0155</td>
-    <td>-.0140</td>
+    <td align="right">-.0155</td>
+    <td align="right">-.0140</td>
   </tr>
   <tr>
     <td>- SentiStrength</td>
@@ -112,8 +112,8 @@
     <td>.6993</td>
     <td>.6644</td>
     <td>.7002</td>
-    <td>-.0019</td>
-    <td>-.0041</td>
+    <td align="right">-.0019</td>
+    <td align="right">-.0041</td>
   </tr>
   <tr>
     <td>- SentiStrength :-)</td>
@@ -123,8 +123,8 @@
     <td>.6905</td>
     <td>.6538</td>
     <td>.6910</td>
-    <td>-.0107</td>
-    <td>-.0147</td>
+    <td align="right">-.0107</td>
+    <td align="right">-.0147</td>
   </tr>
   <tr>
     <td>- SentiWords</td>
@@ -134,8 +134,8 @@
     <td>.6951</td>
     <td>.6549</td>
     <td>.6958</td>
-    <td>-.0061</td>
-    <td>-.0136</td>
+    <td align="right">-.0061</td>
+    <td align="right">-.0136</td>
   </tr>
   <tr>
     <td>- Sentiment140</td>
@@ -145,8 +145,8 @@
     <td>.6918</td>
     <td>.6511</td>
     <td>.6926</td>
-    <td>-.0094</td>
-    <td>-.0174</td>
+    <td align="right">-.0094</td>
+    <td align="right">-.0174</td>
   </tr>
   <tr>
     <td>- Bing Liu</td>
@@ -156,8 +156,8 @@
     <td>.6989</td>
     <td>.6646</td>
     <td>.6994</td>
-    <td>-.0023</td>
-    <td>-.0039</td>
+    <td align="right">-.0023</td>
+    <td align="right">-.0039</td>
   </tr>
   <tr>
     <td>- MPQA</td>
@@ -167,8 +167,8 @@
     <td>.7002</td>
     <td>.6617</td>
     <td>.7010</td>
-    <td>-.0010</td>
-    <td>-.0068</td>
+    <td align="right">-.0010</td>
+    <td align="right">-.0068</td>
   </tr>
 </table>
 
