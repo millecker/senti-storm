@@ -1,6 +1,7 @@
 # *SentiStorm* - Real-time Twitter Sentiment Classification based on Apache Storm
 
-*SentiStorm* is based on [Apache Storm](https://storm.apache.org) and uses different machine learning techniques to identify the sentiment of a tweet. For example, *SentiStorm* uses **Part-of-Speech (POS) tags**, **Term Frequency-Inverse Document Frequency (TF-IDF)** and multiple **sentiment lexica** to extract a feature vector out of a tweet. This extracted feature vector is processed by a **Support Vector Machine (SVM)**, which predicts the sentiment based on a training dataset.
+*SentiStorm* is based on [Apache Storm](https://storm.apache.org) \[1\] and uses different machine learning techniques to identify the sentiment of a tweet. For example, *SentiStorm* uses **Part-of-Speech (POS) tags**, **Term Frequency-Inverse Document Frequency (TF-IDF)** and multiple **sentiment lexica** to extract a feature vector out of a tweet. This extracted feature vector is processed by a **Support Vector Machine (SVM)**, which predicts the sentiment based on a training dataset.
+The full thesis can be found [here](/docs/masterthesis.pdf).
 
 ## Topology of *SentiStorm*
 
@@ -9,8 +10,12 @@
   <tr><td align="center">Topology of <i>SentiStorm</i></td></tr>
 </table>
 
+The figure above illustrates the topology of *SentiStorm* including its components. The *Dataset Spout* emits tweets from a local dataset into the Storm pipeline. It can be easily replaced by another *Spout*. For example, a *Twitter Spout* can be used to emit tweets directly from the real-time Twitter stream. After tweets have been emitted by a *Spout*, the *Tokenizer* replaces possible Unicode or HTML symbols and tokenizes the tweet text by a complex regular expression. Then, each token is processed by the *Preprocessor*, which tries to unify emoticons, fix slang language or gerund forms and remove elongations. The unification of emotions removes repeating characters to get a consistent set of emoticons. For example, the emoticon :-))) is replaced by :-) and therefore the sentiment can be easily obtained from an emoticon lexicon. Slang expressions such as *omg* are substituted by *oh my god* by the usage of multiple slang lexica. Gerund forms are fixed by checking the ending of words for an omitted *g* such as in *goin*. The remove elongations process is equivalent to the unification of emoticons and tries to eliminate repeating characters such as in *suuuper*. After the *Preprocessor*, a *POS Tagger* predicts  the part-of-speech label for each token and forwards them to the *Feature Vector Generation*. The feature extraction process is a key component in *SentiStorm*. It generates a feature vector for each tweet based on the previously gathered data. The *Feature Vector Generation* component uses TF-IDF, POS tags and multiple sentiment lexica to map a tweet text into numerical features. Based on this feature vector the SVM component is finally able to predict the sentiment of the given tweet.
+
 
 ### Tokenizer
+
+The *Tokenizer* is the first *Bolt* in the *SentiStorm* topology and splits a tweet text into several tokens. In this process, the *Tokenizer* uses pattern matching with regular expressions. Furthermore, it replaces Unicode or HTML symbols before tokenizing the tweet text.
 
 <table>
   <tr><td><img src="/docs/images/tokenizer.png" alt="Tokenizer workflow" width="250"></td></tr>
@@ -19,17 +24,40 @@
 
 ### Preprocessor
 
+The *Preprocessor* component receives the tokenized tweet from the *Tokenizer* and prepares the tokens for the *POS Tagger*. The following figure illustrates the workflow of the *Preprocessor*, which consists of multiple steps.
+
 <table>
   <tr><td><img src="/docs/images/preprocessor.png" alt="Preprocessor workflow" width="250"></td></tr>
   <tr><td align="center">Preprocessor workflow</i></td></tr>
 </table>
 
+In the first step, the *Preprocessor* unifies all emoticons. For example, the emoticon :-))) will become :-) to get a consistent set of emoticons. *SentiStorm* does currently not differentiate between these two emoticons, both of them have the same positive sentiment score based on the SentiStrength \[1\] emoticons lexicon. Future extensions of *SentiStorm* might differentiate between these emoticons by using boost sentiment scores. In the second step, the *Preprocessor* tries to substitute slang expressions. The replacement of slang expressions will help the *POS Tagger* to determine the right POS tag. The next step fixes possible punctuations between characters. For example, the term *L.O.V.E* is replaced by the term *LOVE*. The *Preprocessor* also fixes incomplete gerund forms such as *goin* by replacing it with *going*. For that purpose, it uses the *WordNet* \[1\] dictionary to find a valid word. In the last step, elongations such as *suuuper* are removed. If an elongation has been removed by the *Preprocessor*, then it has to check the term for any slang expression again.
+
 ### POS Tagger
+
+The *POS Tagger* component determines the part-of-speech (POS) labels for the preprocessed tokens. Currently there are two major POS taggers available, which are highly specialized for the Twitter-specific language. The first POS tagger was presented by Derczynski et al. \[1\] of the General Architecture for Text Engineering (GATE) group at the University of Sheffield. Owoputi et al. \[2\] of the ARK research group at the Carnegie Mellon University proposed the second major POS tagger.
+
+The first implementation of *SentiStorm* used the GATE POS tagger because of the commonly used PTB tagset support. But the major drawback in speed of the GATE tagger made a transition to the ARK tagger necessary. The GATE tagger is significantly slower than the ARK tagger and therefore it is not applicable in a real-time environment such as Storm. A performance comparison between the GATE and ARK tagger can be found in the performance evaluation section.
 
 ### Feature Vector Generation
 
+The feature extraction process is a key component of *SentiStorm*. It is responsible for the predicting quality of the follow-up *Support Vector Machine* component. The *Feature Vector Generation* component extracts numerical features out of the preprocessed and tagged tweets. For that purpose, it uses a rich feature set, which consists of Term Frequency-Inverse Document Frequency (TF-IDF), POS tags and sentiment lexica.
+
+The following table presents the different sentiment lexica, which are used by *SentiStorm*. It also includes the number of terms and the range of the sentiment scores. Each sentiment lexicon consists of a set of tokens, which are assigned by a sentiment score.
+
+| Sentiment Lexicon | # of Terms | Scores |
+|-------------------------|:---------------:|:--------------------:|
+| AFINN-111 \[1\] | 2477 words | [-5, 5] |
+| SentiStrength Emotions \[1\] | 2,544 regex | [-5, 5] |
+| SentiStrength Emoticons \[1\] | 107 emoticons | [-1, 1] |
+| SentiWords \[1\] | 147,292 words | [-0.935, 0.88257] |
+| Sentiment140 \[1\] | 62,468 unigrams | [-4.999, 5] |
+| Bing Liu \[1\] | 6,785 words | [positive, negative] |
+| MPQA Subjectivity \[1\] | 6,886 words | [positive, negative] |
+
 ### Support Vector Machine (SVM)
 
+The last component of the *SentiStorm* topology is the *Support Vector Machine* (SVM). SVM is used to classify the sentiment of a tweet based on its feature vector. It is a supervised learning model and requires a set of training data and associated labels. The training data consist of feature vectors, which are usually defined by numerical values. The SVM tries to find hyperplanes that separate these training vectors based on their associated labels. Then all future feature vectors can be classified. *SentiStorm* uses the *LIBSVM* library of Chang et al. \[1\]. It is a well-known SVM implementation in the machine learning area.
 
 ## Quality of *SentiStorm*
 
@@ -246,4 +274,5 @@
 
 ## References
 
+\[1\] https://storm.apache.org
 
