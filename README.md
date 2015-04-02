@@ -1,6 +1,7 @@
 # *SentiStorm* - Real-time Twitter Sentiment Classification based on Apache Storm
 
 *SentiStorm* is based on [Apache Storm](https://storm.apache.org) \[1\] and uses different machine learning techniques to identify the sentiment of a tweet. For example, *SentiStorm* uses **Part-of-Speech (POS) tags**, **Term Frequency-Inverse Document Frequency (TF-IDF)** and multiple **sentiment lexica** to extract a feature vector out of a tweet. This extracted feature vector is processed by a **Support Vector Machine (SVM)**, which predicts the sentiment based on a training dataset.
+
 The full thesis can be found [here](/docs/masterthesis.pdf).
 
 ## Topology of *SentiStorm*
@@ -12,6 +13,7 @@ The full thesis can be found [here](/docs/masterthesis.pdf).
 
 The figure above illustrates the topology of *SentiStorm* including its components. The *Dataset Spout* emits tweets from a local dataset into the Storm pipeline. It can be easily replaced by another *Spout*. For example, a *Twitter Spout* can be used to emit tweets directly from the real-time Twitter stream. After tweets have been emitted by a *Spout*, the *Tokenizer* replaces possible Unicode or HTML symbols and tokenizes the tweet text by a complex regular expression. Then, each token is processed by the *Preprocessor*, which tries to unify emoticons, fix slang language or gerund forms and remove elongations. The unification of emotions removes repeating characters to get a consistent set of emoticons. For example, the emoticon :-))) is replaced by :-) and therefore the sentiment can be easily obtained from an emoticon lexicon. Slang expressions such as *omg* are substituted by *oh my god* by the usage of multiple slang lexica. Gerund forms are fixed by checking the ending of words for an omitted *g* such as in *goin*. The remove elongations process is equivalent to the unification of emoticons and tries to eliminate repeating characters such as in *suuuper*. After the *Preprocessor*, a *POS Tagger* predicts  the part-of-speech label for each token and forwards them to the *Feature Vector Generation*. The feature extraction process is a key component in *SentiStorm*. It generates a feature vector for each tweet based on the previously gathered data. The *Feature Vector Generation* component uses TF-IDF, POS tags and multiple sentiment lexica to map a tweet text into numerical features. Based on this feature vector the SVM component is finally able to predict the sentiment of the given tweet.
 
+The figure also the corresponding parallelism count of each component. The parallelism value depends on the number of workers or nodes $n$. For example, the parallelism value of the *POS Tagger* component is 50 for a 10-node cluster, which means that each node executes 5 threads. These parallelism values fully utilize the 32 cores of a *c3.8xlarge* instance, because the *LIBSVM* library uses multiple threads too.
 
 ### Tokenizer
 
@@ -60,6 +62,18 @@ The following table presents the different sentiment lexica, which are used by *
 The last component of the *SentiStorm* topology is the *Support Vector Machine* (SVM). SVM is used to classify the sentiment of a tweet based on its feature vector. It is a supervised learning model and requires a set of training data and associated labels. The training data consist of feature vectors, which are usually defined by numerical values. The SVM tries to find hyperplanes that separate these training vectors based on their associated labels. Then all future feature vectors can be classified. *SentiStorm* uses the *LIBSVM* library of Chang et al. \[1\]. It is a well-known SVM implementation in the machine learning area.
 
 ## Quality of *SentiStorm*
+
+The quality evaluation compares the sentiment prediction quality of *SentiStorm* with state-of-art sentiment classification systems based on the SemEval 2013 dataset. The F<sub>p/n</sub>-measure of *SentiStorm* is 66.85%, which would achieve the second place in the top five SemEval message polarity results of 2013. The following table shows the top five SemEval Message Polarity \[1\] results of 2013.
+
+| Team | F<sub>p/n</sub> |
+|------------|--------|
+| NRC-Canada | 0.6902 |
+| GU-MLT-LT | 0.6527 |
+| teragram | 0.6486 |
+| BOUNCE | 0.6353 |
+| KLUE | 0.6306 |
+
+The feature ablation of the following table illustrates how much impact different features have on the overall prediction quality. Each row presents F-measures, which are obtained by subtracting one feature from all features. The most important features are the class weights and TF-IDF, which improve the F-measure by 0.0354 and 0.0287. The sentiment lexica of *Bing Liu* and *MPQA* have only a minimal impact in the prediction quality.
 
 <table>
   <tr>
@@ -122,7 +136,7 @@ The last component of the *SentiStorm* topology is the *Support Vector Machine* 
     <td align="right">-.0154</td>
   </tr>
   <tr>
-    <td>- AFINN</td>
+    <td>- AFINN [1]</td>
     <td>.6952</td>
     <td>.6138</td>
     <td>.7082</td>
@@ -133,7 +147,7 @@ The last component of the *SentiStorm* topology is the *Support Vector Machine* 
     <td align="right">-.0140</td>
   </tr>
   <tr>
-    <td>- SentiStrength</td>
+    <td>- SentiStrength [1]</td>
     <td>.7070</td>
     <td>.6218</td>
     <td>.7247</td>
@@ -144,7 +158,7 @@ The last component of the *SentiStorm* topology is the *Support Vector Machine* 
     <td align="right">-.0041</td>
   </tr>
   <tr>
-    <td>- SentiStrength :-)</td>
+    <td>- SentiStrength :-) [1]</td>
     <td>.6938</td>
     <td>.6138</td>
     <td>.7180</td>
@@ -155,7 +169,7 @@ The last component of the *SentiStorm* topology is the *Support Vector Machine* 
     <td align="right">-.0147</td>
   </tr>
   <tr>
-    <td>- SentiWords</td>
+    <td>- SentiWords [1]</td>
     <td>.7003</td>
     <td>.6094</td>
     <td>.7246</td>
@@ -166,7 +180,7 @@ The last component of the *SentiStorm* topology is the *Support Vector Machine* 
     <td align="right">-.0136</td>
   </tr>
   <tr>
-    <td>- Sentiment140</td>
+    <td>- Sentiment140 [1]</td>
     <td>.6972</td>
     <td>.6051</td>
     <td>.7222</td>
@@ -177,7 +191,7 @@ The last component of the *SentiStorm* topology is the *Support Vector Machine* 
     <td align="right">-.0174</td>
   </tr>
   <tr>
-    <td>- Bing Liu</td>
+    <td>- Bing Liu [1]</td>
     <td>.7031</td>
     <td>.6261</td>
     <td>.7242</td>
@@ -188,7 +202,7 @@ The last component of the *SentiStorm* topology is the *Support Vector Machine* 
     <td align="right">-.0039</td>
   </tr>
   <tr>
-    <td>- MPQA</td>
+    <td>- MPQA [1]</td>
     <td>.7075</td>
     <td>.6159</td>
     <td>.7279</td>
@@ -202,6 +216,9 @@ The last component of the *SentiStorm* topology is the *Support Vector Machine* 
 
 ## Performance of *SentiStorm*
 
+The performance evaluation analyzes the speed of *SentiStorm*. The speed is mostly measured in tuples per second, which in this case are tweets per second. The performance evaluations are based on Amazon *c3.8xlarge* EC2 instances. The Storm multi-node cluster consists of a single worker per node and goes up to 10 nodes.
+
+The following table illustrates the latency of each *SentiStorm* component and the complete latency of the topology. The *Preprocessor* has the lowest latency of about 0.108 ms. The *POS Tagger* component has the highest latency. It needs about 1.53 ms to process one tweet, which is more than 10 times slower than the *Preprocessor*. *SVM* is slightly faster with a latency of 1.025 ms. The table also shows only a minimal increase in latency for multiple nodes. The complete latency of the topology is about 53.5 ms, which means that it takes 53.5 ms to process a tweet throughout the complete topology. The topology of *SentiStorm* was optimized for high throughput, accepting a higher latency. 
 
 | Nodes | Tokenizer Latency (ms) | Preprocessor Latency (ms) | POS Tagger Latency (ms) | Feature Generation Latency (ms) | SVM Latency (ms) | Complete Latency (ms) |
 |:-----:|:----------------------:|:-------------------------:|:-----------------------:|:-------------------------------:|:----------------:|:---------------------:|
@@ -216,6 +233,7 @@ The last component of the *SentiStorm* topology is the *Support Vector Machine* 
 | 9 | 0.180 | 0.107 | 1.521 | 0.177 | 1.016 | 54.055 |
 | 10 | 0.182 | 0.107 | 1.528 | 0.176 | 1.031 | 53.889 |
 
+The following table presents the throughput of *SentiStorm*. The throughput is measured in tweets per second at the end of the topology. The average number of tweets per second decreases only minimal from 1044 tweets per second at one node to 929 tweets per second at 10 nodes. This means that a single-node Storm cluster is able to execute 3133 tweets per second, which is only 20% less than the stand-alone performance. Based on Storm the *SentiStorm* topology scales almost linear and achieves 27,876 tweets per second at 10 nodes. These are 1,672,560 tweets per minute, 100,353,600 tweets per hour and 2,408,486,400 tweets per day. *SentiStorm* is able to predict the sentiment of each tweet of the global Twitter stream in real-time.
 
 <table>
   <tr>
