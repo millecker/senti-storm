@@ -1,0 +1,183 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Specific configuration values can be overridden by config.yaml
+
+##############################################################################
+### global.resources.* configs are resources configurations
+##############################################################################
+global.resources.datasets.semeval:
+    "2013":
+        path: "resources/datasets/SemEval2013"
+        train.file: "twitter-train-full-B.tsv"
+        dev.file: "twitter-dev-gold-B.tsv"
+        test.file: "twitter-test-gold-B.tsv"
+        delimiter: "\\t"
+        tweetId.index: 0
+        label.index: 2
+        text.index: 3
+        positive.labels: [positive]
+        negative.labels: [negative, \"negative\"]
+        neutral.labels: [neutral, objective-OR-neutral, objective]
+        positive.class.value: 0
+        negative.class.value: 1
+        neutral.class.value: 2
+        svm.kernel: 2 # RBF # 0 Linear
+        svm.c: 512.0 # 0.5
+        svm.gamma: 0.000488281 # null
+        svm.class.weights: # http://www.csie.ntu.edu.tw/~cjlin/libsvm/faq.html#f804
+            0: 1.26
+            1: 2.96
+            2: 1.0
+
+global.resources.dict:
+    FirstNames: # http://www.oxfordreference.com/view/10.1093/acref/9780198610601.001.0001/acref-9780198610601?hide=true&pageSize=100&sort=titlesort
+        - "resources/dictionaries/FirstNames.txt"
+    StopWords:
+        - "resources/dictionaries/Stopwords.txt"
+
+global.resources.dict.sentiment:
+    # AFINN http://www2.imm.dtu.dk/pubdb/views/publication_details.php?id=6010
+    - path: "resources/dictionaries/sentiment/AFINN-111.txt"
+      delimiter: "\\t"
+      containsPOSTags: false
+      containsRegex: false
+      featureScaling: true
+      minValue: -5.0
+      maxValue: 5.0
+      enabled: true
+    # SentiStrengthEmotion http://sentistrength.wlv.ac.uk/#Download
+    - path: "resources/dictionaries/sentiment/SentiStrength_Data_Sept2011_EmotionLookupTable.txt"
+      delimiter: "\\t"
+      containsPOSTags: false
+      containsRegex: true
+      featureScaling: true
+      minValue: -5.0
+      maxValue: 5.0
+      enabled: true
+    # SentiStrengthEmoticon http://sentistrength.wlv.ac.uk/#Download
+    - path: "resources/dictionaries/sentiment/SentiStrength_Data_Sept2011_EmoticonLookupTable.txt"
+      delimiter: "\\t"
+      containsPOSTags: false
+      containsRegex: false
+      featureScaling: true
+      minValue: -1.0
+      maxValue: 1.0
+      enabled: true
+    # SentiWords https://hlt.fbk.eu/technologies/sentiwords # words might contain an underscore (bi-gram)
+    - path: "resources/dictionaries/sentiment/SentiWords_1.0.txt"
+      delimiter: "\\t"
+      containsPOSTags: true
+      containsRegex: false
+      featureScaling: true
+      minValue: -0.935
+      maxValue: 0.88257
+      enabled: true
+    # Sentiment140 http://www.saifmohammad.com/WebPages/lexicons.html
+    - path: "resources/dictionaries/sentiment/Sentiment140_unigrams_pmilexicon.txt"
+      delimiter: "\\t"
+      containsPOSTags: false
+      containsRegex: false
+      featureScaling: true
+      minValue: -4.999
+      maxValue: 5.0
+      enabled: true
+    # BingLiu http://www.cs.uic.edu/~liub/FBS/sentiment-analysis.html#lexicon
+    - path: "resources/dictionaries/sentiment/Bing_Liu.txt"
+      delimiter: "\\t"
+      containsPOSTags: false
+      containsRegex: false
+      featureScaling: true
+      minValue: -1.0
+      maxValue: 1.0
+      enabled: true
+    # MPQASubjectivity http://mpqa.cs.pitt.edu/lexicons/subj_lexicon/
+    - path: "resources/dictionaries/sentiment/MPQA_subjclueslen1-HLTEMNLP05.txt"
+      delimiter: "\\t"
+      containsPOSTags: false
+      containsRegex: false
+      featureScaling: true
+      minValue: -1.0
+      maxValue: 1.0
+      enabled: true
+
+global.resources.dict.slang:
+    # InternetSlang http://www.internetslang.com/
+    - path: "resources/dictionaries/slang/InternetSlang.txt"
+      delimiter: "\\t"
+      enabled: true
+    # NoSlang http://www.noslang.com/dictionary/
+    - path: "resources/dictionaries/slang/NoSlang.txt"
+      delimiter: "\\t"
+      enabled: true
+    # GATE https://gate.ac.uk/wiki/twitter-postagger.html (orth.en)
+    - path: "resources/dictionaries/slang/GATE_slang.en.csv"
+      delimiter: ","
+      enabled: true
+    # SentiStrength http://sentistrength.wlv.ac.uk/#Download
+    - path: "resources/dictionaries/slang/SentiStrength_Data_Sept2011_SlangLookupTable.txt"
+      delimiter: "\\t"
+      enabled: true
+
+global.resources.dict.wordnet.path: "resources/dictionaries/wordnet/wn3.1.dict.tar.gz"
+
+# ARK POS Tagger Model http://www.ark.cs.cmu.edu/TweetNLP/
+global.resources.postagger.ark.model.path: "resources/models/ark.model.20120919.txt"
+
+##############################################################################
+### commons.* configs are for the commons package
+##############################################################################
+
+commons.preprocessor.logging: false
+commons.postagger.logging: false
+commons.sentimentdictionary.logging: false
+commons.tfidf.logging: false
+commons.featurevectorgenerator.pos.logging: false
+commons.featurevectorgenerator.sentiment.logging: false
+commons.featurevectorgenerator.tfidf.logging: false
+
+##############################################################################
+### sentistorm.* configs are for the SentiStorm application
+##############################################################################
+
+sentistorm.workers.num: 1
+sentistorm.workers.childopts: "-Xmx4g"
+
+# supervisor childopts are useless - use storm.yaml instead
+sentistorm.supervisor.childopts: "-Xmx4g"
+
+sentistorm.spout.parallelism: 1
+sentistorm.spout.max.pending: 150
+sentistorm.spout.startup.sleep.ms: 20000 # 20 sec
+sentistorm.spout.tuple.sleep.ms: null
+sentistorm.spout.tuple.sleep.ns: null # 250000 = 0.25 ms
+sentistorm.spout.filter.language: "en"
+
+sentistorm.bolt.tokenizer.parallelism: 1
+sentistorm.bolt.tokenizer.logging: false
+
+sentistorm.bolt.preprocessor.parallelism: 1
+sentistorm.bolt.preprocessor.logging: false
+
+sentistorm.bolt.postagger.parallelism: 1
+sentistorm.bolt.postagger.logging: false
+sentistorm.bolt.postagger.model: "resources/models/ark.model.20120919.txt"
+
+sentistorm.bolt.featuregeneration.parallelism: 1
+sentistorm.bolt.featuregeneration.logging: false
+
+sentistorm.bolt.svm.parallelism: 1
+sentistorm.bolt.svm.logging: true
