@@ -53,7 +53,7 @@ The following table presents the different sentiment lexica, which are used by *
 | [SentiStrength Emotions](http://sentistrength.wlv.ac.uk) | 2,544 regex | [-5, 5] |
 | [SentiStrength Emoticons](http://sentistrength.wlv.ac.uk) | 107 emoticons | [-1, 1] |
 | [SentiWords](https://hlt.fbk.eu/technologies/sentiwords) | 147,292 words | [-0.935, 0.88257] |
-| [Sentiment140](http://saifmohammad.com) | 62,468 unigrams | [-4.999, 5] |
+| [Sentiment140](http://www.saifmohammad.com/WebPages/lexicons.html) | 62,468 unigrams | [-4.999, 5] |
 | [Bing Liu](http://www.cs.uic.edu/~liub/FBS/sentiment-analysis.html) | 6,785 words | [positive, negative] |
 | [MPQA Subjectivity](http://mpqa.cs.pitt.edu/lexicons/subj_lexicon/) | 6,886 words | [positive, negative] |
 
@@ -136,7 +136,7 @@ The feature ablation of the following table illustrates how much impact differen
     <td align="right">-.0154</td>
   </tr>
   <tr>
-    <td>- AFINN [1]</td>
+    <td>- <a href="http://www2.imm.dtu.dk/pubdb/views/publication_details.php?id=6010">AFINN</a></td>
     <td>.6952</td>
     <td>.6138</td>
     <td>.7082</td>
@@ -147,7 +147,7 @@ The feature ablation of the following table illustrates how much impact differen
     <td align="right">-.0140</td>
   </tr>
   <tr>
-    <td>- SentiStrength [1]</td>
+    <td>- <a href="http://sentistrength.wlv.ac.uk">SentiStrength</a></td>
     <td>.7070</td>
     <td>.6218</td>
     <td>.7247</td>
@@ -158,7 +158,7 @@ The feature ablation of the following table illustrates how much impact differen
     <td align="right">-.0041</td>
   </tr>
   <tr>
-    <td>- SentiStrength :-) [1]</td>
+    <td>- <a href="http://sentistrength.wlv.ac.uk">SentiStrength :-)</a></td>
     <td>.6938</td>
     <td>.6138</td>
     <td>.7180</td>
@@ -169,7 +169,7 @@ The feature ablation of the following table illustrates how much impact differen
     <td align="right">-.0147</td>
   </tr>
   <tr>
-    <td>- SentiWords [1]</td>
+    <td>- <a href="https://hlt.fbk.eu/technologies/sentiwords">SentiWords</a></td>
     <td>.7003</td>
     <td>.6094</td>
     <td>.7246</td>
@@ -180,7 +180,7 @@ The feature ablation of the following table illustrates how much impact differen
     <td align="right">-.0136</td>
   </tr>
   <tr>
-    <td>- Sentiment140 [1]</td>
+    <td>- <a href="http://www.saifmohammad.com/WebPages/lexicons.html">Sentiment140</a></td>
     <td>.6972</td>
     <td>.6051</td>
     <td>.7222</td>
@@ -191,7 +191,7 @@ The feature ablation of the following table illustrates how much impact differen
     <td align="right">-.0174</td>
   </tr>
   <tr>
-    <td>- Bing Liu [1]</td>
+    <td>- <a href="http://www.cs.uic.edu/~liub/FBS/sentiment-analysis.html">Bing Liu</a></td>
     <td>.7031</td>
     <td>.6261</td>
     <td>.7242</td>
@@ -202,7 +202,7 @@ The feature ablation of the following table illustrates how much impact differen
     <td align="right">-.0039</td>
   </tr>
   <tr>
-    <td>- MPQA [1]</td>
+    <td>- <a href="http://mpqa.cs.pitt.edu/lexicons/subj_lexicon/">MPQA</a></td>
     <td>.7075</td>
     <td>.6159</td>
     <td>.7279</td>
@@ -233,7 +233,7 @@ The following table illustrates the latency of each *SentiStorm* component and t
 | 9 | 0.180 | 0.107 | 1.521 | 0.177 | 1.016 | 54.055 |
 | 10 | 0.182 | 0.107 | 1.528 | 0.176 | 1.031 | 53.889 |
 
-The following table presents the throughput of *SentiStorm*. The throughput is measured in tweets per second at the end of the topology. The average number of tweets per second decreases only minimal from 1044 tweets per second at one node to 929 tweets per second at 10 nodes. This means that a single-node Storm cluster is able to execute **3133** tweets per second, which is only 20% less than the stand-alone performance. Based on Storm the *SentiStorm* topology scales almost linear and achieves **27,876** tweets per second at 10 nodes. These are 1,672,560 tweets per minute, 100,353,600 tweets per hour and 2,408,486,400 tweets per day. *SentiStorm* is able to predict the sentiment of each tweet of the global Twitter stream in real-time.
+The following table presents the throughput of *SentiStorm*. The throughput is measured in tweets per second at the end of the topology. The average number of tweets per second decreases only minimal from 1044 tweets per second at one node to 929 tweets per second at 10 nodes. This means that a single-node Storm cluster is able to execute **3133** tweets per second, which is only 20% less than the stand-alone performance. Based on Storm the *SentiStorm* topology scales almost linear and achieves **27,876** tweets per second at 10 nodes. These are **1,672,560** tweets per minute, **100,353,600** tweets per hour and **2,408,486,400** tweets per day. *SentiStorm* is able to predict the sentiment of each tweet of the global Twitter stream in real-time.
 
 <table>
   <tr>
@@ -292,19 +292,24 @@ The following table presents the throughput of *SentiStorm*. The throughput is m
 
 ## Requirements
 
+1. You have to download and place the [wn3.1.dict.tar.gz](http://wordnetcode.princeton.edu/wn3.1.dict.tar.gz) file into [`resources/dictionaries/wordnet`](/resources/dictionaries/wordnet).
+2. Modify supervisor childopts in `storm.yaml`
 
 ## Build and Run
 You will need Java 7 and [Apache Ant](http://ant.apache.org) to build *SentiStorm*.
 
 You can simply build with:
-> ant jar
+> `ant jar`
 
 You can simply run *SentiStorm* with:
-> ant run
+> `ant run`
 
 ## References
 
 \[1\] https://gate.ac.uk/sale/ranlp2013/twitter_pos/twitter_pos.pdf
+
 \[2\] http://www.ark.cs.cmu.edu/TweetNLP/owoputi+etal.naacl13.pdf
+
 \[3\] http://www.csie.ntu.edu.tw/~cjlin/papers/libsvm.pdf
+
 \[4\] http://www.cs.york.ac.uk/semeval-2013/accepted/101_Paper.pdf
