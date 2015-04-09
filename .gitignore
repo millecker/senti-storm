@@ -1,6 +1,7 @@
 bin/
-
+build
 conf/configuration.yaml
+SentiStorm.jar
 
 resources/datasets/SemEval2013/svm_problem.txt
 resources/datasets/SemEval2013/twitter-dev-gold-B.tsv
@@ -26,4 +27,3 @@ resources/dictionaries/slang/SentiStrength_Data_Sept2011_SlangLookupTable.txt
 resources/dictionaries/wordnet/wn3.1.dict.tar.gz
 
 resources/models/ark.model.20120919.txt
-

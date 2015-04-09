@@ -1,0 +1,192 @@
+<!-- ********************************************************************** -->
+<!-- ********************************************************************** -->
+<!-- Apache Ant commonbuild.xml                                             -->
+<!-- ********************************************************************** -->
+<!-- ********************************************************************** -->
+<project>
+	<!-- ***** Custom settings for local build.xml ***** -->
+	<property name="root" value="." />
+	<property name="lib" value="lib" />
+	<property name="lib.dir" value="${root}${file.separator}${lib}" />
+	<property name="src.dir" value="src" />
+	<property name="build.dir" value="build/classes" />
+
+	<!-- ***** Custom settings for local build.xml ***** -->
+	<!-- <property name="output.file" value="" /> -->
+	<property name="output.file-jar" value="${output.file}.jar" />
+	<property name="output.file-tmp-jar" value="${output.file}_tmp.jar" />
+
+	<!-- ***** Custom settings for local build.xml ***** -->
+	<!-- if properties were already defined, it has no effect! -->
+	<property name="util.src.dir" value="" />
+	<property name="libjars.cpu" value="" />
+	<property name="libfiles.cpu" value="" />
+	<property name="program" value="" />
+	<property name="application.args" value="" />
+
+	<!-- ***** Load ant contrib for Loops and If Tasks ***** -->
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
+		<classpath>
+			<pathelement location="${lib.dir}${file.separator}ant-contrib-0.6.jar" />
+		</classpath>
+	</taskdef>
+
+	<!-- ***** Setting up the master classpath including libs and local build.dir ***** -->
+	<path id="master-classpath">
+		<fileset dir="${lib.dir}">
+			<include name="*.jar" />
+		</fileset>
+		<pathelement path="${build.dir}" />
+	</path>
+
+	<!-- ****************************************************************** -->
+	<!-- TARGET CLEAN                                                       -->
+	<!-- ****************************************************************** -->
+	<target name="clean">
+		<delete dir="build" />
+		<delete file="${output.file-jar}" />
+		<delete file="${output.file-tmp-jar}" />
+	</target>
+
+	<!-- ****************************************************************** -->
+	<!-- TARGET COMPILE                                                     -->
+	<!-- ****************************************************************** -->
+	<target name="compile">
+		<mkdir dir="${build.dir}" />
+		<if>
+      <equals arg1="${util.src.dir}" arg2="" />
+      <else>
+        <echo>Compile util: ${util.src.dir}</echo>
+        <javac srcdir="${util.src.dir}" destdir="${build.dir}" classpathref="master-classpath" includeantruntime="false" />
+      </else>
+    </if>
+    <javac srcdir="${src.dir}" destdir="${build.dir}" classpathref="master-classpath" includeantruntime="false" />
+	</target>
+
+	<!-- ****************************************************************** -->
+	<!-- TARGET jar                                                         -->
+	<!-- Generate jar file and include dependent libs                       -->
+	<!-- ****************************************************************** -->
+	<target name="jar" depends="compile">
+		<jar destfile="${output.file-jar}" basedir="${build.dir}">
+			<manifest>
+				<attribute name="Main-Class" value="${cpu.class}" />
+			</manifest>
+		</jar>
+		<echo>Main-Class: ${cpu.class}</echo>
+		<!-- 1) Pack content of jar libraries into destination jar -->
+		<!-- Setup libjar arguments -->
+		<echo>Including lib jars: ${libjars.cpu}</echo>
+		<var name="libjar.args" value="" />
+		<for list="${libjars.cpu}" param="libjar">
+			<sequential>
+				<var name="libjar.args" value="${libjar.args}-libjar ${root}${file.separator}@{libjar} " />
+			</sequential>
+		</for>
+		<echo>java -Xmx4G -jar ${lib.dir}/pack.jar -mainjar ${output.file-jar} ${libjar.args} -destjar ${output.file-tmp-jar}</echo>
+		<exec executable="java">
+			<arg value="-Xmx4G" />
+			<arg value="-jar" />
+			<arg value="${lib.dir}/pack.jar" />
+			<arg value="-mainjar" />
+			<arg value="${output.file-jar}" />
+			<arg line="${libjar.args}" />
+			<arg value="-destjar" />
+			<arg value="${output.file-tmp-jar}" />
+		</exec>
+		<echo>Delete ${output.file-jar}</echo>
+		<delete file="${output.file-jar}" />
+		<echo>Rename ${output.file-tmp-jar} to ${output.file-jar}</echo>
+		<move file="${output.file-tmp-jar}" tofile="${output.file-jar}" />
+		<!-- 2) Add additional files into destination jar -->
+    	<if>
+      	<equals arg1="${libfiles.cpu}" arg2="" />
+      	<else>
+        	<echo>Including files: ${libfiles.cpu}</echo>
+        	<for list="${libfiles.cpu}" param="libjar">
+                <sequential>
+                    <echo>jar uf ${output.file-jar} -C ${root} @{libjar}</echo>
+                    <exec executable="jar">
+                        <arg value="uf" />
+                        <arg value="${output.file-jar}" />
+                        <arg value="-C" />
+                        <arg value="${root}" />
+                        <arg value="@{libjar}" />
+                    </exec>
+                </sequential>
+            </for>
+        </else>
+        </if>
+	</target>
+
+	<!-- ****************************************************************** -->
+	<!-- PRIVATE TARGET -run-program                                        -->
+	<!-- Execute program ${program} using {application.main.jar}            -->
+	<!-- ****************************************************************** -->
+	<target name="-run-program">
+		<!-- Build applications Arguments -->
+		<var name="application.args.available" value="" />
+		<!-- set empty if its not available -->
+		<property name="${application.args}" value="" />
+
+		<for list="${application.args}" param="application.arg" delimiter=" ">
+			<sequential>
+				<!-- set empty if its not available -->
+				<property name="@{application.arg}" value="" />
+				<if>
+					<equals arg1="${@{application.arg}}" arg2="" />
+					<else>
+						<echo>Application Argument @{application.arg}: ${@{application.arg}}</echo>
+						<var name="application.args.available" value="${application.args.available} ${@{application.arg}}" />
+					</else>
+				</if>
+			</sequential>
+		</for>
+
+		<!-- Program Arguments -->
+		<!-- set empty if its not available -->
+		<property name="${program.bin.args}" value="" />
+		<property name="${application.args.fixed}" value="" />
+
+		<echo>${program.bin} ${program.bin.args} ${application.main.jar} ${application.args.fixed} ${application.args.available}</echo>
+		<exec executable="${program.bin}">
+			<arg line="${program.bin.args}" />
+			<arg value="${application.main.jar}" />
+			<arg line="${application.args.fixed}" />
+			<arg line="${application.args.available}" />
+		</exec>
+	</target>
+
+	<!-- ****************************************************************** -->
+	<!-- TARGET run                                                         -->
+	<!-- Run jar                                                            -->
+	<!-- ****************************************************************** -->
+	<target name="run">
+		<echo>Run ${output.file}</echo>
+		<if>
+			<equals arg1="${cpu.class}" arg2="" />
+			<then>
+				<echo>Missing CPU class {cpu.class} specification in build.xml!</echo>
+				<echo>No CPU implementation available!</echo>
+			</then>
+			<elseif>
+				<equals arg1="${program}" arg2="" />
+				<then>
+					<echo>No program was specified in build.xml!</echo>
+					<echo>Possible programs: ${program.options}</echo>
+				</then>
+			</elseif>
+			<else>
+				<!-- <echo>Run with ${program}</echo> -->
+				<antcall target="clean" />
+				<antcall target="jar" />
+				<antcall target="-run-program">
+					<param name="program.bin" value="${program}" />
+					<param name="program.bin.args" value="${program.args}" />
+					<param name="application.main.jar" value="${output.file-jar}" />
+				</antcall>
+			</else>
+		</if>
+	</target>
+
+</project>
