@@ -1,6 +1,6 @@
 # *SentiStorm* - Real-time Twitter Sentiment Classification based on Apache Storm
 
-*SentiStorm* is based on [Apache Storm](https://storm.apache.org) \[1\] and uses different machine learning techniques to identify the sentiment of a tweet. For example, *SentiStorm* uses **Part-of-Speech (POS) tags**, **Term Frequency-Inverse Document Frequency (TF-IDF)** and multiple **sentiment lexica** to extract a feature vector out of a tweet. This extracted feature vector is processed by a **Support Vector Machine (SVM)**, which predicts the sentiment based on a training dataset.
+*SentiStorm* is based on [Apache Storm](https://storm.apache.org) and uses different machine learning techniques to identify the sentiment of a tweet. For example, *SentiStorm* uses **Part-of-Speech (POS) tags**, **Term Frequency-Inverse Document Frequency (TF-IDF)** and multiple **sentiment lexica** to extract a feature vector out of a tweet. This extracted feature vector is processed by a **Support Vector Machine (SVM)**, which predicts the sentiment based on a training dataset.
 
 The full thesis can be found [here](/docs/masterthesis.pdf).
 
@@ -33,7 +33,7 @@ The [*Preprocessor*](/src/at/illecker/sentistorm/bolt/PreprocessorBolt.java) com
   <tr><td align="center">Preprocessor workflow</i></td></tr>
 </table>
 
-In the first step, the *Preprocessor* unifies all emoticons. For example, the emoticon :-))) will become :-) to get a consistent set of emoticons. *SentiStorm* does currently not differentiate between these two emoticons, both of them have the same positive sentiment score based on the SentiStrength \[1\] emoticons lexicon. Future extensions of *SentiStorm* might differentiate between these emoticons by using boost sentiment scores. In the second step, the *Preprocessor* tries to substitute slang expressions. The replacement of slang expressions will help the *POS Tagger* to determine the right POS tag. The next step fixes possible punctuations between characters. For example, the term *L.O.V.E* is replaced by the term *LOVE*. The *Preprocessor* also fixes incomplete gerund forms such as *goin* by replacing it with *going*. For that purpose, it uses the [*WordNet*](https://wordnet.princeton.edu) \[1\] dictionary to find a valid word. In the last step, elongations such as *suuuper* are removed. If an elongation has been removed by the *Preprocessor*, then it has to check the term for any slang expression again.
+In the first step, the *Preprocessor* unifies all emoticons. For example, the emoticon :-))) will become :-) to get a consistent set of emoticons. *SentiStorm* does currently not differentiate between these two emoticons, both of them have the same positive sentiment score based on the [SentiStrength](http://sentistrength.wlv.ac.uk) emoticons lexicon. Future extensions of *SentiStorm* might differentiate between these emoticons by using boost sentiment scores. In the second step, the *Preprocessor* tries to substitute slang expressions. The replacement of slang expressions will help the *POS Tagger* to determine the right POS tag. The next step fixes possible punctuations between characters. For example, the term *L.O.V.E* is replaced by the term *LOVE*. The *Preprocessor* also fixes incomplete gerund forms such as *goin* by replacing it with *going*. For that purpose, it uses the [*WordNet*](https://wordnet.princeton.edu) dictionary to find a valid word. In the last step, elongations such as *suuuper* are removed. If an elongation has been removed by the *Preprocessor*, then it has to check the term for any slang expression again.
 
 ### POS Tagger
 
@@ -49,21 +49,21 @@ The following table presents the different sentiment lexica, which are used by *
 
 | Sentiment Lexicon | # of Terms | Scores |
 |-------------------------|:---------------:|:--------------------:|
-| AFINN-111 \[1\] | 2477 words | [-5, 5] |
-| SentiStrength Emotions \[1\] | 2,544 regex | [-5, 5] |
-| SentiStrength Emoticons \[1\] | 107 emoticons | [-1, 1] |
-| SentiWords \[1\] | 147,292 words | [-0.935, 0.88257] |
-| Sentiment140 \[1\] | 62,468 unigrams | [-4.999, 5] |
-| Bing Liu \[1\] | 6,785 words | [positive, negative] |
-| MPQA Subjectivity \[1\] | 6,886 words | [positive, negative] |
+| [AFINN-111](http://www2.imm.dtu.dk/pubdb/views/publication_details.php?id=6010) | 2477 words | [-5, 5] |
+| [SentiStrength Emotions](http://sentistrength.wlv.ac.uk) | 2,544 regex | [-5, 5] |
+| [SentiStrength Emoticons](http://sentistrength.wlv.ac.uk) | 107 emoticons | [-1, 1] |
+| [SentiWords](https://hlt.fbk.eu/technologies/sentiwords) | 147,292 words | [-0.935, 0.88257] |
+| [Sentiment140](http://saifmohammad.com) | 62,468 unigrams | [-4.999, 5] |
+| [Bing Liu](http://www.cs.uic.edu/~liub/FBS/sentiment-analysis.html) | 6,785 words | [positive, negative] |
+| [MPQA Subjectivity](http://mpqa.cs.pitt.edu/lexicons/subj_lexicon/) | 6,886 words | [positive, negative] |
 
 ### Support Vector Machine (SVM)
 
-The last component of the *SentiStorm* topology is the [*Support Vector Machine*](/src/at/illecker/sentistorm/bolt/SVMBolt.java). SVM is used to classify the sentiment of a tweet based on its feature vector. It is a supervised learning model and requires a set of training data and associated labels. The training data consist of feature vectors, which are usually defined by numerical values. The SVM tries to find hyperplanes that separate these training vectors based on their associated labels. Then all future feature vectors can be classified. *SentiStorm* uses the [*LIBSVM*](http://www.csie.ntu.edu.tw/~cjlin/libsvm/) library of Chang et al. \[1\]. It is a well-known SVM implementation in the machine learning area.
+The last component of the *SentiStorm* topology is the [*Support Vector Machine*](/src/at/illecker/sentistorm/bolt/SVMBolt.java). SVM is used to classify the sentiment of a tweet based on its feature vector. It is a supervised learning model and requires a set of training data and associated labels. The training data consist of feature vectors, which are usually defined by numerical values. The SVM tries to find hyperplanes that separate these training vectors based on their associated labels. Then all future feature vectors can be classified. *SentiStorm* uses the [*LIBSVM*](http://www.csie.ntu.edu.tw/~cjlin/libsvm/) library of Chang et al. \[3\]. It is a well-known SVM implementation in the machine learning area.
 
 ## Quality of *SentiStorm*
 
-The quality evaluation compares the sentiment prediction quality of *SentiStorm* with state-of-art sentiment classification systems based on the SemEval 2013 dataset. The F<sub>p/n</sub>-measure of *SentiStorm* is **66.85%**, which would achieve the second place in the top five SemEval message polarity results of 2013. The following table shows the top five SemEval Message Polarity \[1\] results of 2013.
+The quality evaluation compares the sentiment prediction quality of *SentiStorm* with state-of-art sentiment classification systems based on the SemEval 2013 dataset. The F<sub>p/n</sub>-measure of *SentiStorm* is **66.85%**, which would achieve the second place in the top five SemEval message polarity results of 2013. The following table shows the top five SemEval Message Polarity \[4\] results of 2013.
 
 | Team | F<sub>p/n</sub> |
 |------------|--------|
@@ -73,7 +73,7 @@ The quality evaluation compares the sentiment prediction quality of *SentiStorm*
 | BOUNCE | 0.6353 |
 | KLUE | 0.6306 |
 
-The feature ablation of the following table illustrates how much impact different features have on the overall prediction quality. Each row presents F-measures, which are obtained by subtracting one feature from all features. The most important features are the class weights and TF-IDF, which improve the F-measure by 0.0354 and 0.0287. The sentiment lexica of *Bing Liu* and *MPQA* have only a minimal impact in the prediction quality.
+The feature ablation of the following table illustrates how much impact different features have on the overall prediction quality. Each row presents F-measures, which are obtained by subtracting one feature from all features. The most important features are the class weights and TF-IDF, which improve the F-measure by 0.0354 and 0.0287. The sentiment lexica of [Bing Liu](http://www.cs.uic.edu/~liub/FBS/sentiment-analysis.html) and [MPQA](http://mpqa.cs.pitt.edu/lexicons/subj_lexicon/) have only a minimal impact in the prediction quality.
 
 <table>
   <tr>
@@ -290,7 +290,21 @@ The following table presents the throughput of *SentiStorm*. The throughput is m
   <tr><td colspan="2" align="center">Throughput of <i>SentiStorm</i> based on the SemEval 2013 dataset and <i>c3.8xlarge</i> EC2 nodes</td></tr>
 </table>
 
+## Requirements
+
+
+## Build and Run
+You will need Java 7 and [Apache Ant](http://ant.apache.org) to build *SentiStorm*.
+
+You can simply build with:
+> ant jar
+
+You can simply run *SentiStorm* with:
+> ant run
+
 ## References
 
-\[1\] https://storm.apache.org
-
+\[1\] https://gate.ac.uk/sale/ranlp2013/twitter_pos/twitter_pos.pdf
+\[2\] http://www.ark.cs.cmu.edu/TweetNLP/owoputi+etal.naacl13.pdf
+\[3\] http://www.csie.ntu.edu.tw/~cjlin/papers/libsvm.pdf
+\[4\] http://www.cs.york.ac.uk/semeval-2013/accepted/101_Paper.pdf
