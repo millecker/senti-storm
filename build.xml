@@ -2,7 +2,7 @@
 	<property name="root" value="." />
 	<property name="output.file" value="SentiStorm" />
 	<property name="util.src.dir" value="" />
-	<property name="libjars.cpu" value="${lib}${file.separator}ark-tweet-nlp-0.3.2.jar,${lib}${file.separator}BerkeleyParser-1.7.jar,${lib}${file.separator}commons-compress-1.9.jar,${lib}${file.separator}edu.mit.jwi_2.3.3_jdk.jar,${lib}${file.separator}jackson-core-2.5.2.jar,${lib}${file.separator}twitter-text-1.11.1.jar,${lib}${file.separator}twitter4j-core-4.0.3.jar,${lib}${file.separator}twitter4j-stream-4.0.3.jar,${lib}${file.separator}libsvm-3.2-multithreaded.jar" />
+	<property name="libjars.cpu" value="${lib}${file.separator}ark-tweet-nlp-0.3.2.jar,${lib}${file.separator}BerkeleyParser-1.7.jar,${lib}${file.separator}commons-compress-1.9.jar,${lib}${file.separator}stanford-corenlp-3.4.1.jar,${lib}${file.separator}edu.mit.jwi_2.3.3_jdk.jar,${lib}${file.separator}jackson-core-2.5.2.jar,${lib}${file.separator}twitter-text-1.11.1.jar,${lib}${file.separator}twitter4j-core-4.0.3.jar,${lib}${file.separator}twitter4j-stream-4.0.3.jar,${lib}${file.separator}libsvm-3.2-multithreaded.jar" />
 	<property name="libfiles.cpu" value="conf/defaults.yaml,resources${file.separator}datasets${file.separator}SemEval2013,resources${file.separator}dictionaries,resources${file.separator}models" />
 	<property name="cpu.class" value="at.illecker.sentistorm.SentiStormTopology" />
 	<property name="program" value="storm" />
