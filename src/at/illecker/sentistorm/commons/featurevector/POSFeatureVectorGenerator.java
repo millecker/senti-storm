@@ -92,8 +92,8 @@ public class POSFeatureVectorGenerator extends FeatureVectorGenerator {
       wordCount++;
       String arkTag = word.tag;
       // http://www.ark.cs.cmu.edu/TweetNLP/annot_guidelines.pdf
-      if (arkTag.equals("N") || arkTag.equals("O") || arkTag.equals("Z")) {
-        // TODO || arkTag.equals("^")
+      if (arkTag.equals("N") || arkTag.equals("O") || arkTag.equals("^")
+          || arkTag.equals("Z")) {
         posTags[0]++;
       } else if (arkTag.equals("V") || arkTag.equals("T")) {
         posTags[1]++;

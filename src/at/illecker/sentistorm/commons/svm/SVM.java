@@ -500,14 +500,14 @@ public class SVM {
       } else if (featureVectorGenerator
           .equals(TfIdfFeatureVectorGenerator.class)) {
         TweetTfIdf tweetTfIdf = TweetTfIdf.createFromTaggedTokens(taggedTweets,
-            TfType.LOG, TfIdfNormalization.COS, true);
+            TfType.RAW, TfIdfNormalization.COS, true);
         LOG.info("Load TfIdfFeatureVectorGenerator...");
         fvg = new TfIdfFeatureVectorGenerator(tweetTfIdf);
 
       } else if (featureVectorGenerator
           .equals(CombinedFeatureVectorGenerator.class)) {
         TweetTfIdf tweetTfIdf = TweetTfIdf.createFromTaggedTokens(taggedTweets,
-            TfType.LOG, TfIdfNormalization.COS, true);
+            TfType.RAW, TfIdfNormalization.COS, true);
         LOG.info("Load CombinedFeatureVectorGenerator...");
         fvg = new CombinedFeatureVectorGenerator(true, tweetTfIdf);
 
@@ -692,11 +692,11 @@ public class SVM {
   }
 
   public static void main(String[] args) {
-    int nFoldCrossValidation = 10;
-    int featureVectorLevel = 2;
     Dataset dataSet = Configuration.getDataSetSemEval2013();
     boolean parameterSearch = false;
-    boolean useSerialization = false;
+    boolean useSerialization = true;
+    int nFoldCrossValidation = 0;
+    int featureVectorLevel = 2;
 
     if (featureVectorLevel == 0) {
       SVM.svm(dataSet, SentimentFeatureVectorGenerator.class,
