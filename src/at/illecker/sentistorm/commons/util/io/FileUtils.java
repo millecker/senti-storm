@@ -48,6 +48,10 @@ public class FileUtils {
     List<Tweet> tweets = new ArrayList<Tweet>();
     InputStreamReader isr = null;
     BufferedReader br = null;
+    if (is == null) {
+      LOG.error("InputStream is null! File could not be found!");
+      return null;
+    }
     try {
       isr = new InputStreamReader(is, "UTF-8");
       br = new BufferedReader(isr);

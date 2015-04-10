@@ -18,7 +18,6 @@ package at.illecker.sentistorm.commons;
 
 import java.io.File;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -30,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import at.illecker.sentistorm.commons.svm.SVM;
 import at.illecker.sentistorm.commons.util.io.FileUtils;
+import at.illecker.sentistorm.commons.util.io.SerializationUtils;
 
 public class Dataset implements Serializable {
   private static final long serialVersionUID = 1795067165542638937L;
@@ -166,18 +166,22 @@ public class Dataset implements Serializable {
   }
 
   public List<Tweet> getTrainTweets(boolean includeDevTweets) {
-    if ((m_trainTweets == null) && (this.getTrainDataFile() != null)) {
-      m_trainTweets = FileUtils.readTweets(this.getTrainDataFile(), this);
+    if ((m_trainTweets == null) && (getTrainDataFile() != null)) {
+      // Try deserialization of file
+      String serializationFile = getTrainDataSerializationFile();
+      if (new File(serializationFile).exists()) {
+        LOG.info("Deserialize TrainTweets from: " + serializationFile);
+        m_trainTweets = SerializationUtils.deserialize(serializationFile);
+      } else {
+        LOG.info("Read TrainTweets from: " + getTrainDataFile());
+        m_trainTweets = FileUtils.readTweets(getTrainDataFile(), this);
+        // optional include dev tweets in training dataset
+        if (includeDevTweets) {
+          m_trainTweets.addAll(getDevTweets());
+        }
+      }
     }
-
-    // optional include dev tweets in training dataset
-    if (includeDevTweets) {
-      List<Tweet> combinedList = new ArrayList<Tweet>(m_trainTweets);
-      combinedList.addAll(getDevTweets());
-      return combinedList;
-    } else {
-      return m_trainTweets;
-    }
+    return m_trainTweets;
   }
 
   public List<Tweet> getDevTweets() {
@@ -188,8 +192,16 @@ public class Dataset implements Serializable {
   }
 
   public List<Tweet> getTestTweets() {
-    if ((m_testTweets == null) && (this.getTestDataFile() != null)) {
-      m_testTweets = FileUtils.readTweets(this.getTestDataFile(), this);
+    if ((m_testTweets == null) && (this.getTestDataSerializationFile() != null)) {
+      // Try deserialization of file
+      String serializationFile = getTestDataFile() + ".ser";
+      if (new File(serializationFile).exists()) {
+        LOG.info("Deserialize TestTweets from: " + serializationFile);
+        m_testTweets = SerializationUtils.deserialize(serializationFile);
+      } else {
+        LOG.info("Read TestTweets from: " + getTestDataFile());
+        m_testTweets = FileUtils.readTweets(getTestDataFile(), this);
+      }
     }
     return m_testTweets;
   }
@@ -293,9 +305,9 @@ public class Dataset implements Serializable {
   }
 
   public static void main(String[] args) {
-    Dataset dataSet2013 = Configuration.getDataSetSemEval2013();
+    Dataset dataset = Configuration.getDataSetSemEval2013();
     LOG.info("Dataset: SemEval2013");
-    dataSet2013.printDatasetStats();
+    dataset.printDatasetStats();
   }
 
 }
