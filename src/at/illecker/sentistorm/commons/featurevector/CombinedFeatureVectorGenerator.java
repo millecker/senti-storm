@@ -22,6 +22,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import at.illecker.sentistorm.commons.Configuration;
 import at.illecker.sentistorm.commons.Tweet;
 import at.illecker.sentistorm.commons.tfidf.TfIdfNormalization;
 import at.illecker.sentistorm.commons.tfidf.TfType;
@@ -35,18 +36,15 @@ public class CombinedFeatureVectorGenerator extends FeatureVectorGenerator {
   private static final Logger LOG = LoggerFactory
       .getLogger(CombinedFeatureVectorGenerator.class);
 
-  private final boolean m_useTaggedWords;
   private SentimentFeatureVectorGenerator m_sentimentFeatureVectorGenerator = null;
   private TfIdfFeatureVectorGenerator m_tfidfFeatureVectorGenerator = null;
   private POSFeatureVectorGenerator m_POSFeatureVectorGenerator = null;
 
-  public CombinedFeatureVectorGenerator(boolean useTaggedWords,
-      boolean normalizePOSCounts, TweetTfIdf tweetTfIdf) {
-    m_useTaggedWords = useTaggedWords;
-
+  public CombinedFeatureVectorGenerator(boolean normalizePOSCounts,
+      TweetTfIdf tweetTfIdf) {
     m_sentimentFeatureVectorGenerator = new SentimentFeatureVectorGenerator(1);
 
-    m_POSFeatureVectorGenerator = new POSFeatureVectorGenerator(useTaggedWords,
+    m_POSFeatureVectorGenerator = new POSFeatureVectorGenerator(
         normalizePOSCounts,
         m_sentimentFeatureVectorGenerator.getFeatureVectorSize() + 1);
 
@@ -66,11 +64,6 @@ public class CombinedFeatureVectorGenerator extends FeatureVectorGenerator {
 
   @Override
   public Map<Integer, Double> generateFeatureVector(List<TaggedToken> tweet) {
-    if (m_useTaggedWords) {
-      throw new RuntimeException(
-          "Use TaggedWords was set to true! generateFeatureVectorFromTaggedTokens is not applicable!");
-    }
-
     Map<Integer, Double> featureVector = m_sentimentFeatureVectorGenerator
         .generateFeatureVector(tweet);
 
@@ -86,10 +79,11 @@ public class CombinedFeatureVectorGenerator extends FeatureVectorGenerator {
   public static void main(String[] args) {
     boolean usePOSTags = true; // use POS tags in terms
     Preprocessor preprocessor = Preprocessor.getInstance();
-    POSTagger arkPOSTagger = POSTagger.getInstance();
+    POSTagger posTagger = POSTagger.getInstance();
 
     // Load tweets
-    List<Tweet> tweets = Tweet.getTestTweets();
+    List<Tweet> tweets = Configuration.getDataSetSemEval2013().getTrainTweets(
+        true);
 
     // Tokenize
     List<List<String>> tokenizedTweets = Tokenizer.tokenizeTweets(tweets);
@@ -103,7 +97,7 @@ public class CombinedFeatureVectorGenerator extends FeatureVectorGenerator {
 
     // POS Tagging
     startTime = System.currentTimeMillis();
-    List<List<TaggedToken>> taggedTweets = arkPOSTagger
+    List<List<TaggedToken>> taggedTweets = posTagger
         .tagTweets(preprocessedTweets);
     LOG.info("POS Tagger finished after "
         + (System.currentTimeMillis() - startTime) + " ms");
@@ -112,14 +106,14 @@ public class CombinedFeatureVectorGenerator extends FeatureVectorGenerator {
     TweetTfIdf tweetTfIdf = TweetTfIdf.createFromTaggedTokens(taggedTweets,
         TfType.LOG, TfIdfNormalization.COS, usePOSTags);
     CombinedFeatureVectorGenerator cfvg = new CombinedFeatureVectorGenerator(
-        false, true, tweetTfIdf);
+        true, tweetTfIdf);
 
     // Combined Feature Vector Generation
     for (List<TaggedToken> taggedTokens : taggedTweets) {
       Map<Integer, Double> combinedFeatureVector = cfvg
           .generateFeatureVector(taggedTokens);
 
-      // Build feature vector string
+      // Generate feature vector string
       String featureVectorStr = "";
       for (Map.Entry<Integer, Double> feature : combinedFeatureVector
           .entrySet()) {

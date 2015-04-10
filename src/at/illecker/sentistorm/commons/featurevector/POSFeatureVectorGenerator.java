@@ -32,26 +32,19 @@ public class POSFeatureVectorGenerator extends FeatureVectorGenerator {
       .getLogger(POSFeatureVectorGenerator.class);
   private static final boolean LOGGING = Configuration.get(
       "commons.featurevectorgenerator.pos.logging", false);
-  private int m_vectorStartId = 1;
-  private final boolean m_useTaggedWords;
+  private int m_vectorStartId;
   private final boolean m_normalize;
   private final int m_vectorSize;
 
-  public POSFeatureVectorGenerator(boolean useTaggedWords, boolean normalize) {
-    m_useTaggedWords = useTaggedWords;
+  public POSFeatureVectorGenerator(boolean normalize) {
     m_normalize = normalize;
     m_vectorStartId = 1;
-    if (useTaggedWords) {
-      m_vectorSize = 7;
-    } else {
-      m_vectorSize = 8;
-    }
+    m_vectorSize = 8;
     LOG.info("VectorSize: " + m_vectorSize);
   }
 
-  public POSFeatureVectorGenerator(boolean useTaggedWords, boolean normalize,
-      int vectorStartId) {
-    this(useTaggedWords, normalize);
+  public POSFeatureVectorGenerator(boolean normalize, int vectorStartId) {
+    this(normalize);
     this.m_vectorStartId = vectorStartId;
   }
 
@@ -63,10 +56,6 @@ public class POSFeatureVectorGenerator extends FeatureVectorGenerator {
   @Override
   public Map<Integer, Double> generateFeatureVector(
       List<TaggedToken> taggedTokens) {
-    if (m_useTaggedWords) {
-      throw new RuntimeException(
-          "Use TaggedWords was set to true! generateFeatureVectorFromTaggedTokens is not applicable!");
-    }
     Map<Integer, Double> resultFeatureVector = new TreeMap<Integer, Double>();
     double[] posTags = countPOSTagsFromTaggedTokens(taggedTokens, m_normalize);
     if (posTags != null) {

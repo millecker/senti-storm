@@ -110,8 +110,8 @@ public final class FeaturedTweet extends Tweet implements Serializable {
     // Load Feature Vector Generator
     TweetTfIdf tweetTfIdf = TweetTfIdf.createFromTaggedTokens(taggedTweets,
         TfType.LOG, TfIdfNormalization.COS, true);
-    FeatureVectorGenerator fvg = new CombinedFeatureVectorGenerator(false,
-        true, tweetTfIdf);
+    FeatureVectorGenerator fvg = new CombinedFeatureVectorGenerator(true,
+        tweetTfIdf);
 
     // Feature Vector Generation
     List<FeaturedTweet> featuredTweets = new ArrayList<FeaturedTweet>();

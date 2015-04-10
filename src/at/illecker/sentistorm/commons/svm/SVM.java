@@ -509,7 +509,7 @@ public class SVM {
         TweetTfIdf tweetTfIdf = TweetTfIdf.createFromTaggedTokens(taggedTweets,
             TfType.LOG, TfIdfNormalization.COS, true);
         LOG.info("Load CombinedFeatureVectorGenerator...");
-        fvg = new CombinedFeatureVectorGenerator(false, true, tweetTfIdf);
+        fvg = new CombinedFeatureVectorGenerator(true, tweetTfIdf);
 
       } else {
         throw new UnsupportedOperationException("FeatureVectorGenerator '"
