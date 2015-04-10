@@ -16,7 +16,6 @@
  */
 package at.illecker.sentistorm.components;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import at.illecker.sentistorm.commons.Configuration;
 import at.illecker.sentistorm.commons.Tweet;
+import at.illecker.sentistorm.commons.util.io.IOUtils;
 import at.illecker.sentistorm.commons.util.io.SerializationUtils;
 import cmu.arktweetnlp.Tagger.TaggedToken;
 import cmu.arktweetnlp.impl.Model;
@@ -49,7 +49,7 @@ public class POSTagger {
           && (!m_taggingModel.startsWith("/"))) {
         m_taggingModel = "/" + m_taggingModel;
       }
-      if (new File(m_taggingModel).exists()) {
+      if (IOUtils.exists(m_taggingModel)) {
         LOG.info("Load POS Tagger with model: " + m_taggingModel);
         m_model = Model.loadModelFromText(m_taggingModel);
         m_featureExtractor = new FeatureExtractor(m_model, false);

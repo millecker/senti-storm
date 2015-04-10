@@ -16,7 +16,6 @@
  */
 package at.illecker.sentistorm.commons.dict;
 
-import java.io.File;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -24,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import at.illecker.sentistorm.commons.Configuration;
 import at.illecker.sentistorm.commons.util.io.FileUtils;
+import at.illecker.sentistorm.commons.util.io.IOUtils;
 import at.illecker.sentistorm.commons.util.io.SerializationUtils;
 
 public class FirstNames {
@@ -37,7 +37,7 @@ public class FirstNames {
     for (String file : Configuration.getFirstNames()) {
       // Try deserialization of file
       String serializationFile = file + ".ser";
-      if (new File(serializationFile).exists()) {
+      if (IOUtils.exists(serializationFile)) {
         LOG.info("Deserialize FirstNames from: " + serializationFile);
         if (m_firstNames == null) {
           m_firstNames = SerializationUtils.deserialize(serializationFile);

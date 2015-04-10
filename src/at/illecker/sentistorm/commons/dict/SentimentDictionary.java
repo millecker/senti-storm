@@ -16,7 +16,6 @@
  */
 package at.illecker.sentistorm.commons.dict;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import at.illecker.sentistorm.commons.Configuration;
 import at.illecker.sentistorm.commons.util.StringUtils;
 import at.illecker.sentistorm.commons.util.io.FileUtils;
+import at.illecker.sentistorm.commons.util.io.IOUtils;
 import at.illecker.sentistorm.commons.util.io.SerializationUtils;
 import at.illecker.sentistorm.commons.wordnet.POSTag;
 import at.illecker.sentistorm.commons.wordnet.WordNet;
@@ -64,7 +64,7 @@ public class SentimentDictionary {
         if (containsRegex) {
           // Try deserialization of file
           String serializationFile = file + ".ser";
-          if (new File(serializationFile).exists()) {
+          if (IOUtils.exists(serializationFile)) {
             LOG.info("Deserialize WordListMap from: " + serializationFile);
             m_wordListMaps.add((WordListMap<Double>) SerializationUtils
                 .deserialize(serializationFile));
@@ -78,7 +78,7 @@ public class SentimentDictionary {
         } else {
           // Try deserialization of file
           String serializationFile = file + ".ser";
-          if (new File(serializationFile).exists()) {
+          if (IOUtils.exists(serializationFile)) {
             LOG.info("Deserialize WordList from: " + serializationFile);
             m_wordLists.add((Map<String, Double>) SerializationUtils
                 .deserialize(serializationFile));

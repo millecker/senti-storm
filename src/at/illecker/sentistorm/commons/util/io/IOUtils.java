@@ -56,6 +56,21 @@ public class IOUtils {
     }
   }
 
+  public static boolean exists(String file) {
+    // 1) check if file is in jar
+    if (IOUtils.class.getClassLoader().getResourceAsStream(file) != null) {
+      return true;
+    }
+    // windows File.separator is \, but getting resources only works with /
+    if (IOUtils.class.getClassLoader().getResourceAsStream(
+        file.replaceAll("\\\\", "/")) != null) {
+      return true;
+    }
+
+    // 2) if not found in jar, check the file system
+    return new File(file).exists();
+  }
+
   public static InputStream getInputStream(String fileOrUrl) {
     return getInputStream(fileOrUrl, false);
   }

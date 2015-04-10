@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import at.illecker.sentistorm.commons.svm.SVM;
 import at.illecker.sentistorm.commons.util.io.FileUtils;
+import at.illecker.sentistorm.commons.util.io.IOUtils;
 import at.illecker.sentistorm.commons.util.io.SerializationUtils;
 
 public class Dataset implements Serializable {
@@ -169,7 +170,7 @@ public class Dataset implements Serializable {
     if ((m_trainTweets == null) && (getTrainDataFile() != null)) {
       // Try deserialization of file
       String serializationFile = getTrainDataSerializationFile();
-      if (new File(serializationFile).exists()) {
+      if (IOUtils.exists(serializationFile)) {
         LOG.info("Deserialize TrainTweets from: " + serializationFile);
         m_trainTweets = SerializationUtils.deserialize(serializationFile);
       } else {
@@ -185,17 +186,17 @@ public class Dataset implements Serializable {
   }
 
   public List<Tweet> getDevTweets() {
-    if ((m_devTweets == null) && (this.getDevDataFile() != null)) {
-      m_devTweets = FileUtils.readTweets(this.getDevDataFile(), this);
+    if ((m_devTweets == null) && (getDevDataFile() != null)) {
+      m_devTweets = FileUtils.readTweets(getDevDataFile(), this);
     }
     return m_devTweets;
   }
 
   public List<Tweet> getTestTweets() {
-    if ((m_testTweets == null) && (this.getTestDataSerializationFile() != null)) {
+    if ((m_testTweets == null) && (getTestDataFile() != null)) {
       // Try deserialization of file
-      String serializationFile = getTestDataFile() + ".ser";
-      if (new File(serializationFile).exists()) {
+      String serializationFile = getTestDataSerializationFile();
+      if (IOUtils.exists(serializationFile)) {
         LOG.info("Deserialize TestTweets from: " + serializationFile);
         m_testTweets = SerializationUtils.deserialize(serializationFile);
       } else {

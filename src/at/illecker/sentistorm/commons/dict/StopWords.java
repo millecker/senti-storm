@@ -1,6 +1,5 @@
 package at.illecker.sentistorm.commons.dict;
 
-import java.io.File;
 import java.util.List;
 import java.util.Set;
 
@@ -26,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import at.illecker.sentistorm.commons.Configuration;
 import at.illecker.sentistorm.commons.util.io.FileUtils;
+import at.illecker.sentistorm.commons.util.io.IOUtils;
 import at.illecker.sentistorm.commons.util.io.SerializationUtils;
 
 public class StopWords {
@@ -60,7 +60,7 @@ public class StopWords {
       for (String file : files) {
         // Try deserialization of file
         String serializationFile = file + ".ser";
-        if (new File(serializationFile).exists()) {
+        if (IOUtils.exists(serializationFile)) {
           LOG.info("Deserialize FirstNames from: " + serializationFile);
           m_stopwords.addAll((Set<String>) SerializationUtils
               .deserialize(serializationFile));

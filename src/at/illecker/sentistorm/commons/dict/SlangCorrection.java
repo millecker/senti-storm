@@ -16,7 +16,6 @@
  */
 package at.illecker.sentistorm.commons.dict;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import at.illecker.sentistorm.commons.Configuration;
 import at.illecker.sentistorm.commons.util.io.FileUtils;
+import at.illecker.sentistorm.commons.util.io.IOUtils;
 import at.illecker.sentistorm.commons.util.io.SerializationUtils;
 
 public class SlangCorrection {
@@ -45,7 +45,7 @@ public class SlangCorrection {
         Map<String, String> slangWordList = null;
         // Try deserialization of file
         String serializationFile = file + ".ser";
-        if (new File(serializationFile).exists()) {
+        if (IOUtils.exists(serializationFile)) {
           LOG.info("Deserialize SlangLookupTable from: " + serializationFile);
           slangWordList = SerializationUtils.deserialize(serializationFile);
         } else {
