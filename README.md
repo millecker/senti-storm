@@ -292,8 +292,10 @@ The following table presents the throughput of *SentiStorm*. The throughput is m
 
 ## Requirements
 
-1. You have to download and place the [wn3.1.dict.tar.gz](http://wordnetcode.princeton.edu/wn3.1.dict.tar.gz) file into [`resources/dictionaries/wordnet`](/resources/dictionaries/wordnet).
-2. Modify supervisor childopts in `storm.yaml`
+1. You have to download [wn3.1.dict.tar.gz](http://wordnetcode.princeton.edu/wn3.1.dict.tar.gz) into [`resources/dictionaries/wordnet`](/resources/dictionaries/wordnet).<br />
+`wget -P resources/dictionaries/wordnet/ http://wordnetcode.princeton.edu/wn3.1.dict.tar.gz`
+2. Increase `supervisor.childopts` by updating the `conf/storm.yaml` and restart supervisors.<br />
+`echo supervisor.childopts: \"-Xmx4g\" >> conf/storm.yaml`
 
 ## Build and Run
 You will need Java 7 and [Apache Ant](http://ant.apache.org) to build *SentiStorm*.
