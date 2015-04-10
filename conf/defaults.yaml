@@ -134,8 +134,8 @@ global.resources.dict.slang:
 
 global.resources.dict.wordnet.path: "resources/dictionaries/wordnet/wn3.1.dict.tar.gz"
 
-# ARK POS Tagger Model http://www.ark.cs.cmu.edu/TweetNLP/
-global.resources.postagger.ark.model.path: "resources/models/ark.model.20120919.txt"
+# POS Tagger Model http://www.ark.cs.cmu.edu/TweetNLP/
+global.resources.postagger.model.path: "resources/models/ark.model.20120919.txt"
 
 ##############################################################################
 ### commons.* configs are for the commons package

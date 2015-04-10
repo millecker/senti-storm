@@ -65,13 +65,11 @@ public class POSTaggerBolt extends BaseBasicBolt {
       m_logging = false;
     }
 
-    // Load ARK POS Tagger
-    String taggingModel = Configuration
-        .get("global.resources.postagger.ark.model.path");
-    LOG.info("Load ARK POS Tagger model: " + taggingModel + "_model.ser");
+    // Load POS Tagger
+    String taggingModel = Configuration.get("sentistorm.bolt.postagger.model");
+    LOG.info("Load POS Tagger model: " + taggingModel + "_model.ser");
     m_model = SerializationUtils.deserialize(taggingModel + "_model.ser");
-
-    LOG.info("Load ARK POS Tagger featureExtractor : " + taggingModel
+    LOG.info("Load POS Tagger featureExtractor : " + taggingModel
         + "_featureExtractor.ser");
     m_featureExtractor = SerializationUtils.deserialize(taggingModel
         + "_featureExtractor.ser");

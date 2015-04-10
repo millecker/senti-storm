@@ -16,6 +16,7 @@
  */
 package at.illecker.sentistorm.components;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,15 +44,23 @@ public class POSTagger {
     // Load POS Tagger
     try {
       m_taggingModel = Configuration
-          .get("global.resources.postagger.ark.model.path");
-      LOG.info("Load POS Tagger with model: " + m_taggingModel);
-      // TODO absolute path needed for resource
+          .get("global.resources.postagger.model.path");
       if ((Configuration.RUNNING_WITHIN_JAR)
           && (!m_taggingModel.startsWith("/"))) {
         m_taggingModel = "/" + m_taggingModel;
       }
-      m_model = Model.loadModelFromText(m_taggingModel);
-      m_featureExtractor = new FeatureExtractor(m_model, false);
+      if (new File(m_taggingModel).exists()) {
+        LOG.info("Load POS Tagger with model: " + m_taggingModel);
+        m_model = Model.loadModelFromText(m_taggingModel);
+        m_featureExtractor = new FeatureExtractor(m_model, false);
+      } else {
+        LOG.info("Load POS Tagger model: " + m_taggingModel + "_model.ser");
+        m_model = SerializationUtils.deserialize(m_taggingModel + "_model.ser");
+        LOG.info("Load POS Tagger featureExtractor : " + m_taggingModel
+            + "_featureExtractor.ser");
+        m_featureExtractor = SerializationUtils.deserialize(m_taggingModel
+            + "_featureExtractor.ser");
+      }
     } catch (IOException e) {
       LOG.error("IOException: " + e.getMessage());
     }
