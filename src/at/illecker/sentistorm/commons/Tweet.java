@@ -20,8 +20,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class Tweet implements Serializable {
-  private static final long serialVersionUID = -4384758604087824295L;
+public class Tweet implements Serializable {
+  private static final long serialVersionUID = 3778428208873277421L;
   private final Long m_id;
   private final String m_text;
   private final Double m_score;

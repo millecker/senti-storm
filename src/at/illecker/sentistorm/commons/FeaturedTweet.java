@@ -32,34 +32,28 @@ import at.illecker.sentistorm.components.Preprocessor;
 import at.illecker.sentistorm.components.Tokenizer;
 import cmu.arktweetnlp.Tagger.TaggedToken;
 
-public final class FeaturedTweet implements Serializable {
-  private static final long serialVersionUID = 5884187886384205275L;
-  private final Tweet m_tweet;
+public final class FeaturedTweet extends Tweet implements Serializable {
+  private static final long serialVersionUID = -1917356433934166756L;
   private final List<String> m_tokens;
   private final List<String> m_preprocessedTokens;
   private final List<TaggedToken> m_taggedTokens;
   private final Map<Integer, Double> m_featureVector; // dense vector
 
-  private FeaturedTweet(Tweet tweet, List<String> tokens,
-      List<String> preprocessedTokens, List<TaggedToken> arkTaggedWords,
-      Map<Integer, Double> arkFeatureVector) {
-    m_tweet = tweet;
+  public FeaturedTweet(long id, String text, double score, List<String> tokens,
+      List<String> preprocessedTokens, List<TaggedToken> taggedTokens,
+      Map<Integer, Double> featureVector) {
+    super(id, text, score);
     m_tokens = tokens;
     m_preprocessedTokens = preprocessedTokens;
-    m_taggedTokens = arkTaggedWords;
-    m_featureVector = arkFeatureVector;
+    m_taggedTokens = taggedTokens;
+    m_featureVector = featureVector;
   }
 
-  public Long getId() {
-    return m_tweet.getId();
-  }
-
-  public String getText() {
-    return m_tweet.getText();
-  }
-
-  public Double getScore() {
-    return m_tweet.getScore();
+  public FeaturedTweet(Tweet tweet, List<String> tokens,
+      List<String> preprocessedTokens, List<TaggedToken> taggedTokens,
+      Map<Integer, Double> featureVector) {
+    this(tweet.getId(), tweet.getText(), tweet.getScore(), tokens,
+        preprocessedTokens, taggedTokens, featureVector);
   }
 
   public List<String> getTokens() {
@@ -80,26 +74,12 @@ public final class FeaturedTweet implements Serializable {
 
   @Override
   public boolean equals(Object obj) {
-    return m_tweet.equals(obj);
+    return super.equals(obj);
   }
 
   @Override
   public String toString() {
-    return m_tweet.toString();
-  }
-
-  public static FeaturedTweet create(Long id, String text, Double score,
-      List<String> tokens, List<String> preprocessedTokens,
-      List<TaggedToken> taggedTokens, Map<Integer, Double> featureVector) {
-    return new FeaturedTweet(new Tweet(id, text, score), tokens,
-        preprocessedTokens, taggedTokens, featureVector);
-  }
-
-  public static FeaturedTweet create(Tweet tweet, List<String> tokens,
-      List<String> preprocessedTokens, List<TaggedToken> taggedTokens,
-      Map<Integer, Double> featureVector) {
-    return new FeaturedTweet(tweet, tokens, preprocessedTokens, taggedTokens,
-        featureVector);
+    return super.toString();
   }
 
   public static final List<List<TaggedToken>> getTaggedTokensFromTweets(
@@ -123,11 +103,11 @@ public final class FeaturedTweet implements Serializable {
     List<List<String>> preprocessedTweets = preprocessor
         .preprocessTweets(tokenizedTweets);
 
-    // Ark POS Tagging
+    // POS Tagging
     List<List<TaggedToken>> taggedTweets = postTagger
         .tagTweets(preprocessedTweets);
 
-    // Ark Feature Vector Generator
+    // Load Feature Vector Generator
     TweetTfIdf tweetTfIdf = TweetTfIdf.createFromTaggedTokens(taggedTweets,
         TfType.LOG, TfIdfNormalization.COS, true);
     FeatureVectorGenerator fvg = new CombinedFeatureVectorGenerator(false,
@@ -136,14 +116,12 @@ public final class FeaturedTweet implements Serializable {
     // Feature Vector Generation
     List<FeaturedTweet> featuredTweets = new ArrayList<FeaturedTweet>();
     for (int i = 0; i < tweets.size(); i++) {
-      // Ark Feature Vector Generation
-      List<TaggedToken> arkTaggedTweet = taggedTweets.get(i);
-      Map<Integer, Double> arkFeatureVector = fvg
-          .generateFeatureVector(arkTaggedTweet);
+      List<TaggedToken> taggedTweet = taggedTweets.get(i);
+      Map<Integer, Double> featureVector = fvg
+          .generateFeatureVector(taggedTweet);
 
-      featuredTweets.add(FeaturedTweet.create(tweets.get(i),
-          tokenizedTweets.get(i), preprocessedTweets.get(i), arkTaggedTweet,
-          arkFeatureVector));
+      featuredTweets.add(new FeaturedTweet(tweets.get(i), tokenizedTweets
+          .get(i), preprocessedTweets.get(i), taggedTweet, featureVector));
     }
 
     return featuredTweets;
@@ -167,4 +145,5 @@ public final class FeaturedTweet implements Serializable {
     SerializationUtils.serializeCollection(featuredTestTweets,
         dataset.getTestDataSerializationFile());
   }
+
 }

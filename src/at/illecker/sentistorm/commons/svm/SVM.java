@@ -523,7 +523,7 @@ public class SVM {
         List<TaggedToken> taggedTweet = taggedTweets.get(i);
         Map<Integer, Double> featureVector = fvg
             .generateFeatureVector(taggedTweet);
-        featuredTrainTweets.add(FeaturedTweet.create(trainTweets.get(i),
+        featuredTrainTweets.add(new FeaturedTweet(trainTweets.get(i),
             tokenizedTweets.get(i), preprocessedTweets.get(i), taggedTweet,
             featureVector));
       }
@@ -575,7 +575,7 @@ public class SVM {
         List<TaggedToken> taggedTweet = taggedTweets.get(i);
         Map<Integer, Double> featureVector = fvg
             .generateFeatureVector(taggedTweet);
-        featuredTestTweets.add(FeaturedTweet.create(testTweets.get(i),
+        featuredTestTweets.add(new FeaturedTweet(testTweets.get(i),
             tokenizedTweets.get(i), preprocessedTweets.get(i), taggedTweet,
             featureVector));
       }
