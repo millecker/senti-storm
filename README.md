@@ -303,8 +303,11 @@ You will need Java 7 and [Apache Ant](http://ant.apache.org) to build *SentiStor
 You can simply build with:
 > `ant jar`
 
-You can simply run *SentiStorm* with:
+You can run *SentiStorm* with:
 > `ant run`
+
+You can use the Twitter live stream with the Streaming API credentials:
+> `ant run -DconsumerKey=XXXX -DconsumerSecret=XXXX -DaccessToken=XXXX  -DaccessTokenSecret=XXXX`
 
 ## References
 
