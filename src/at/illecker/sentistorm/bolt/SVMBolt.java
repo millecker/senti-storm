@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import at.illecker.sentistorm.commons.Configuration;
 import at.illecker.sentistorm.commons.Dataset;
+import at.illecker.sentistorm.commons.SentimentClass;
 import at.illecker.sentistorm.commons.svm.SVM;
 import at.illecker.sentistorm.commons.util.io.SerializationUtils;
 import backtype.storm.task.TopologyContext;
@@ -42,6 +43,7 @@ public class SVMBolt extends BaseBasicBolt {
   private static final long serialVersionUID = -6790858930924043126L;
   private static final Logger LOG = LoggerFactory.getLogger(SVMBolt.class);
   private boolean m_logging = false;
+  private Dataset m_dataset;
   private svm_model m_model;
 
   @Override
@@ -59,12 +61,12 @@ public class SVMBolt extends BaseBasicBolt {
     }
 
     LOG.info("Loading SVM model...");
-    Dataset dataset = Configuration.getDataSetSemEval2013();
-    m_model = SerializationUtils.deserialize(dataset.getDatasetPath()
+    m_dataset = Configuration.getDataSetSemEval2013();
+    m_model = SerializationUtils.deserialize(m_dataset.getDatasetPath()
         + File.separator + SVM.SVM_MODEL_FILE_SER);
 
     if (m_model == null) {
-      LOG.error("Could not load SVM model! File: " + dataset.getDatasetPath()
+      LOG.error("Could not load SVM model! File: " + m_dataset.getDatasetPath()
           + File.separator + SVM.SVM_MODEL_FILE_SER);
       throw new RuntimeException();
     }
@@ -89,7 +91,8 @@ public class SVMBolt extends BaseBasicBolt {
     double predictedClass = svm.svm_predict(m_model, testNodes);
 
     if (m_logging) {
-      LOG.info("Tweet predictedClass: " + predictedClass);
+      LOG.info("Tweet predictedSentiment: "
+          + SentimentClass.fromScore(m_dataset, (int) predictedClass));
     }
   }
 
