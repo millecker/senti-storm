@@ -74,6 +74,7 @@ public class SVMBolt extends BaseBasicBolt {
 
   @Override
   public void execute(Tuple tuple, BasicOutputCollector collector) {
+    String text = tuple.getStringByField("text");
     Map<Integer, Double> featureVector = (Map<Integer, Double>) tuple
         .getValueByField("featureVector");
 
@@ -91,7 +92,7 @@ public class SVMBolt extends BaseBasicBolt {
     double predictedClass = svm.svm_predict(m_model, testNodes);
 
     if (m_logging) {
-      LOG.info("Tweet predictedSentiment: "
+      LOG.info("Tweet: " + text + " predictedSentiment: "
           + SentimentClass.fromScore(m_dataset, (int) predictedClass));
     }
   }

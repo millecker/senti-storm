@@ -53,7 +53,7 @@ public class FeatureGenerationBolt extends BaseBasicBolt {
   @Override
   public void declareOutputFields(OutputFieldsDeclarer declarer) {
     // key of output tuples
-    declarer.declare(new Fields("featureVector"));
+    declarer.declare(new Fields("text", "featureVector"));
   }
 
   @Override
@@ -67,7 +67,7 @@ public class FeatureGenerationBolt extends BaseBasicBolt {
       m_logging = false;
     }
 
-    // TODO use serialized CombinedFeatureVectorGenerator
+    // TODO serialize CombinedFeatureVectorGenerator
     List<FeaturedTweet> featuredTrainTweets = SerializationUtils
         .deserialize(m_dataset.getTrainDataSerializationFile());
     if (featuredTrainTweets != null) {
@@ -86,6 +86,7 @@ public class FeatureGenerationBolt extends BaseBasicBolt {
 
   @Override
   public void execute(Tuple tuple, BasicOutputCollector collector) {
+    String text = tuple.getStringByField("text");
     List<TaggedToken> taggedTokens = (List<TaggedToken>) tuple
         .getValueByField("taggedTokens");
 
@@ -94,11 +95,11 @@ public class FeatureGenerationBolt extends BaseBasicBolt {
         .generateFeatureVector(taggedTokens);
 
     if (m_logging) {
-      LOG.info("Tweet: " + featureVector);
+      LOG.info("Tweet: " + text + " FeatureVector: " + featureVector);
     }
 
     // Emit new tuples
-    collector.emit(new Values(featureVector));
+    collector.emit(new Values(text, featureVector));
   }
 
 }

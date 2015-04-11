@@ -42,7 +42,7 @@ public class TokenizerBolt extends BaseBasicBolt {
   @Override
   public void declareOutputFields(OutputFieldsDeclarer declarer) {
     // key of output tuples
-    declarer.declare(new Fields("tokens"));
+    declarer.declare(new Fields("text", "tokens"));
   }
 
   @Override
@@ -66,7 +66,7 @@ public class TokenizerBolt extends BaseBasicBolt {
     }
 
     // Emit new tuples
-    collector.emit(new Values(tokens));
+    collector.emit(new Values(text, tokens));
   }
 
 }

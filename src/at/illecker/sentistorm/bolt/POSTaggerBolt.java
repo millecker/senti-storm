@@ -53,7 +53,7 @@ public class POSTaggerBolt extends BaseBasicBolt {
   @Override
   public void declareOutputFields(OutputFieldsDeclarer declarer) {
     // key of output tuples
-    declarer.declare(new Fields("taggedTokens"));
+    declarer.declare(new Fields("text", "taggedTokens"));
   }
 
   @Override
@@ -77,6 +77,7 @@ public class POSTaggerBolt extends BaseBasicBolt {
 
   @Override
   public void execute(Tuple tuple, BasicOutputCollector collector) {
+    String text = tuple.getStringByField("text");
     List<String> preprocessedTokens = (List<String>) tuple
         .getValueByField("preprocessedTokens");
 
@@ -88,7 +89,7 @@ public class POSTaggerBolt extends BaseBasicBolt {
     }
 
     // Emit new tuples
-    collector.emit(new Values(taggedTokens));
+    collector.emit(new Values(text, taggedTokens));
   }
 
   private List<TaggedToken> tag(List<String> tokens) {
