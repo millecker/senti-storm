@@ -2,7 +2,7 @@
 
 *SentiStorm* is based on [Apache Storm](https://storm.apache.org) and uses different machine learning techniques to identify the sentiment of a tweet. For example, *SentiStorm* uses **Part-of-Speech (POS) tags**, **Term Frequency-Inverse Document Frequency (TF-IDF)** and multiple **sentiment lexica** to extract a feature vector out of a tweet. This extracted feature vector is processed by a **Support Vector Machine (SVM)**, which predicts the sentiment based on a training dataset.
 
-The full thesis can be found [here](/docs/masterthesis.pdf).
+The full thesis can be found [here](http://diglib.uibk.ac.at/urn:nbn:at:at-ubi:1-1909).
 
 ## Topology of *SentiStorm*
 
