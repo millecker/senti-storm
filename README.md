@@ -298,7 +298,7 @@ The following table presents the throughput of *SentiStorm*. The throughput is m
 `echo supervisor.childopts: \"-Xmx4g\" >> conf/storm.yaml`
 
 ## Build and Run
-You will need Java 7 and [Apache Ant](http://ant.apache.org) to build *SentiStorm*.
+You will need Java 7 and [Apache Ant](http://ant.apache.org) to build and [Apache Storm](http://storm.apache.org/) to run *SentiStorm*.
 
 You can simply build with:
 > `ant jar`
